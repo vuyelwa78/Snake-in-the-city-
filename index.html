@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Do you love me?</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(255, 0, 100, 0.3);
+      animation: fadeIn 1s ease-in-out;
+      z-index: 10;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .question {
+      font-size: 32px;
+      margin: 20px 0;
+      font-weight: bold;
+      text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
+    }
+
+    button {
+      padding: 14px 35px;
+      margin: 10px;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .yes-btn {
+      background: #ff007f;
+      color: white;
+      box-shadow: 0 0 15px #ff007f, 0 0 40px #ff3399;
+    }
+
+    .yes-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px #ff33aa, 0 0 60px #ff66cc;
+    }
+
+    .no-btn {
+      background: #444;
+      color: white;
+      position: absolute;
+      box-shadow: 0 0 15px #888;
+    }
+
+    .gender-btn {
+      background: #00ccff;
+      color: white;
+      box-shadow: 0 0 15px #00ccff, 0 0 40px #33ffff;
+    }
+
+    .tod-btn {
+      background: #ffcc00;
+      color: black;
+      box-shadow: 0 0 20px #ffcc00, 0 0 40px #ffee33;
+    }
+
+    .tod-result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #00ffcc;
+      text-shadow: 0 0 15px #00ffcc, 0 0 30px #66ffee;
+    }
+
+    /* Floating neon hearts */
+    .heart {
+      position: absolute;
+      font-size: 22px;
+      color: #ff007f;
+      text-shadow: 0 0 15px #ff3399, 0 0 30px #ff66cc;
+      animation: floatUp 5s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-700px) scale(1.8); opacity: 0; }
+    }
+
+    .powered {
+      position: fixed;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #ff007f;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <!-- First screen -->
+  <div class="question-container container">
+    <h2 class="question">Do you love me? 💖</h2>
+    <div class="button-container">
+      <button class="yes-btn" onclick="showResult()">Yes</button>
+      <button class="no-btn" onmouseover="moveButton()">No</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-container container" style="display:none;">
+    <h2>I knew it ❤️🔥</h2>
+    <h3>Are you Male or Female?</h3>
+    <button class="gender-btn" onclick="setGender('male')">Male 👦</button>
+    <button class="gender-btn" onclick="setGender('female')">Female 👧</button>
+  </div>
+
+  <!-- Truth or Dare -->
+  <div class="tod-container container" style="display:none;">
+    <h2>Truth or Dare? 🎲</h2>
+    <button class="tod-btn" onclick="playGame('truth')">Truth</button>
+    <button class="tod-btn" onclick="playGame('dare')">Dare</button>
+    <div class="tod-result" id="todResult"></div>
+  </div>
+
+  <div class="powered">powered by vuyelwa's addition</div>
+
+  <script>
+    let gender = "";
+
+    const truths = {
+      male: [
+        "Would you ever go on a date with me? ❤️",
+        "What do you really think about me? 🧐",
+        "Have you ever imagined us together? 😏",
+        "What’s the cutest thing about me? 💕",
+        "Would you introduce me to your family? 👨‍👩‍👦",
+        "What’s the first thing you noticed about me? 👀",
+        "Would you miss me if I disappeared for a week? 💭",
+        "What’s the sweetest thing you’d do for me? 🌹",
+        "What nickname would you give me? 🥰",
+        "If I asked for a hug right now, would you say yes? 🤗"
+      ],
+      female: [
+        "Would you ever kiss me if I asked? 💋",
+        "What’s your honest opinion about me? 🥰",
+        "Have you ever dreamed about me? 🌙",
+        "What do you like most about me? 💖",
+        "Would you say yes if I proposed right now? 💍",
+        "What’s the first thing that made you notice me? 👀",
+        "Would you be jealous if I talked to someone else? 😏",
+        "What’s your favorite memory with me? ✨",
+        "Do you think I could be your soulmate? 💞",
+        "If I held your hand, would you let me? ✋❤️"
+      ]
+    };
+
+    const dares = {
+      male: [
+        "Send me a selfie with my name written on your hand 📸",
+        "Say 'I love you' in a voice note 🎤",
+        "Post 'I love [MY NAME]' on your story ❤️",
+        "Write me a love poem ✍️",
+        "Call me and say something sweet ☎️",
+        "Send me your cutest smile selfie 😊",
+        "Record yourself saying my name 5 times 💕",
+        "Draw a heart with my name inside ❤️",
+        "Send me a message saying why you like me 💌",
+        "Pretend I’m your girlfriend for 1 minute 😍"
+      ],
+      female: [
+        "Send me a selfie blowing me a kiss 😘",
+        "Say 'I love you' three times in a cute way 🥺",
+        "Post 'I love [MY NAME]' on your story 💌",
+        "Draw a heart with my name inside ❤️",
+        "Send me a voice note saying you miss me 🎶",
+        "Take a cute mirror selfie and send it 💕",
+        "Send me a flirty emoji combo 😏🔥",
+        "Write 'I belong to [MY NAME]' and show me ✍️",
+        "Record yourself saying 'You’re mine' ❤️",
+        "Pretend you’re on a date with me for 1 minute 🍷"
+      ]
+    };
+
+    function showResult() {
+      document.querySelector(".question-container").style.display = "none";
+      document.querySelector(".result-container").style.display = "block";
+      setInterval(createHeart, 400);
+    }
+
+    function moveButton() {
+      const noBtn = document.querySelector(".no-btn");
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 100);
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerHTML = "💖";
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.bottom = "0px";
+      document.body.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+
+    function setGender(selectedGender) {
+      gender = selectedGender;
+      document.querySelector(".result-container").style.display = "none";
+      document.querySelector(".tod-container").style.display = "block";
+    }
+
+    function playGame(choice) {
+      let challenge;
+      if (choice === "truth") {
+        challenge = truths[gender][Math.floor(Math.random() * truths[gender].length)];
+      } else {
+        challenge = dares[gender][Math.floor(Math.random() * dares[gender].length)];
+      }
+      document.getElementById("todResult").innerHTML = `${choice.toUpperCase()}: ${challenge}`;
+    }
+  </script>
+</body>
+</html>
